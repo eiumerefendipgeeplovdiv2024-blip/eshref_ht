@@ -3505,75 +3505,193 @@ body::after {
     -->
         
         <script type="text/javascript" crossorigin="anonymous" src="./index_files/surveys.js"></script><script type="text/javascript" crossorigin="anonymous" src="./index_files/config.js"></script><script type="text/javascript" crossorigin="anonymous" src="./index_files/posthog-recorder.js"></script><script type="text/javascript" crossorigin="anonymous" src="./index_files/dead-clicks-autocapture.js"></script><script type="text/javascript" crossorigin="anonymous" src="./index_files/web-vitals.js"></script><script>
-            !(function (t, e) {
-                var o, n, p, r;
-                e.__SV ||
-                    ((window.posthog = e),
-                    (e._i = []),
-                    (e.init = function (i, s, a) {
-                        function g(t, e) {
-                            var o = e.split(".");
-                            2 == o.length && ((t = t[o[0]]), (e = o[1])),
-                                (t[e] = function () {
-                                    t.push(
-                                        [e].concat(
-                                            Array.prototype.slice.call(
-                                                arguments,
-                                                0,
-                                            ),
-                                        ),
-                                    );
-                                });
-                        }
-                        ((p = t.createElement("script")).type =
-                            "text/javascript"),
-                            (p.crossOrigin = "anonymous"),
-                            (p.async = !0),
-                            (p.src =
-                                s.api_host.replace(
-                                    ".i.posthog.com",
-                                    "-assets.i.posthog.com",
-                                ) + "/static/array.js"),
-                            (r =
-                                t.getElementsByTagName(
-                                    "script",
-                                )[0]).parentNode.insertBefore(p, r);
-                        var u = e;
-                        for (
-                            void 0 !== a ? (u = e[a] = []) : (a = "posthog"),
-                                u.people = u.people || [],
-                                u.toString = function (t) {
-                                    var e = "posthog";
-                                    return (
-                                        "posthog" !== a && (e += "." + a),
-                                        t || (e += " (stub)"),
-                                        e
-                                    );
-                                },
-                                u.people.toString = function () {
-                                    return u.toString(1) + ".people (stub)";
-                                },
-                                o =
-                                    "init me ws ys ps bs capture je Di ks register register_once register_for_session unregister unregister_for_session Ps getFeatureFlag getFeatureFlagPayload isFeatureEnabled reloadFeatureFlags updateEarlyAccessFeatureEnrollment getEarlyAccessFeatures on onFeatureFlags onSurveysLoaded onSessionId getSurveys getActiveMatchingSurveys renderSurvey canRenderSurvey canRenderSurveyAsync identify setPersonProperties group resetGroups setPersonPropertiesForFlags resetPersonPropertiesForFlags setGroupPropertiesForFlags resetGroupPropertiesForFlags reset get_distinct_id getGroups get_session_id get_session_replay_url alias set_config startSessionRecording stopSessionRecording sessionRecordingStarted captureException loadToolbar get_property getSessionProperty Es $s createPersonProfile Is opt_in_capturing opt_out_capturing has_opted_in_capturing has_opted_out_capturing clear_opt_in_out_capturing Ss debug xs getPageViewId captureTraceFeedback captureTraceMetric".split(
-                                        " ",
-                                    ),
-                                n = 0;
-                            n < o.length;
-                            n++
-                        )
-                            g(u, o[n]);
-                        e._i.push([i, s, a]);
-                    }),
-                    (e.__SV = 1));
-            })(document, window.posthog || []);
-            posthog.init("phc_xAvL2Iq4tFmANRE7kzbKwaSqp1HJjN7x48s3vr0CMjs", {
-                api_host: "https://us.i.posthog.com",
-                person_profiles: "identified_only", // or 'always' to create profiles for anonymous users as well,
-                session_recording: {
-                    recordCrossOriginIframes: true,
-                    capturePerformance: false,
-                },
-            });
+        (function () {
+  "use strict";
+
+  document.addEventListener("DOMContentLoaded", init);
+  if (document.readyState === "interactive" || document.readyState === "complete") {
+    init();
+  }
+
+  function init() {
+    setupNav();
+    setupHotspots();
+    setupBackToTop();
+    setupFadeIn();
+  }
+
+  // ---------- Навигация (горно меню + мобилно меню) ----------
+  function setupNav() {
+    var sectionMap = {
+      "nav-link-uchilishte": "uchilishte",
+      "nav-link-pyasak": "pyasak",
+      "nav-link-nakazania": "nakazania",
+      "nav-link-uchiteli": "uchiteli",
+      "nav-link-prosveta": "prosveta",
+      "nav-link-evolyutsia": "evolyutsia",
+      "nav-link-timeline": "timeline"
+    };
+
+    Object.keys(sectionMap).forEach(function (testId) {
+      var btn = document.querySelector('[data-testid="' + testId + '"]');
+      if (!btn) return;
+      btn.addEventListener("click", function () {
+        scrollToId(sectionMap[testId]);
+        closeMobileMenu();
+      });
+    });
+
+    var homeBtn = document.querySelector('[data-testid="nav-home"]');
+    if (homeBtn) {
+      homeBtn.addEventListener("click", function () {
+        window.scrollTo({ top: 0, behavior: "smooth" });
+        closeMobileMenu();
+      });
+    }
+
+    var toggle = document.querySelector('[data-testid="nav-toggle"]');
+    var navList = document.querySelector('header[data-testid="site-nav"] nav');
+    if (toggle && navList) {
+      toggle.addEventListener("click", function () {
+        var isOpen = navList.classList.contains("mobile-nav-open");
+        if (isOpen) {
+          closeMobileMenu();
+        } else {
+          openMobileMenu();
+        }
+      });
+    }
+
+    function openMobileMenu() {
+      if (!navList) return;
+      navList.classList.add("mobile-nav-open");
+      navList.classList.remove("hidden");
+      navList.style.position = "absolute";
+      navList.style.top = "100%";
+      navList.style.left = "0";
+      navList.style.right = "0";
+      navList.style.flexDirection = "column";
+      navList.style.alignItems = "flex-start";
+      navList.style.gap = "0";
+      navList.style.background = "#faf6ee";
+      navList.style.borderTop = "1px solid #d8cdb8";
+      navList.style.borderBottom = "1px solid #d8cdb8";
+      navList.style.padding = "0.5rem 1.5rem 1rem";
+      navList.style.zIndex = "60";
+      var buttons = navList.querySelectorAll("button");
+      buttons.forEach(function (b) {
+        b.style.padding = "0.6rem 0";
+        b.style.width = "100%";
+        b.style.textAlign = "left";
+      });
+    }
+
+    function closeMobileMenu() {
+      if (!navList) return;
+      if (window.innerWidth >= 1280) return;
+      navList.classList.remove("mobile-nav-open");
+      navList.classList.add("hidden");
+      navList.removeAttribute("style");
+    }
+  }
+
+  // ---------- Hotspot-ове в интерактивната класна стая ----------
+  function setupHotspots() {
+    var sectionForHotspot = {
+      1: "uchilishte",
+      2: "pyasak",
+      3: "nakazania",
+      4: "biografii",
+      5: "prosveta",
+      6: "evolyutsia",
+      7: "timeline"
+    };
+
+    for (var i = 1; i <= 7; i++) {
+      (function (idx) {
+        var dot = document.querySelector('[data-testid="hotspot-' + idx + '"]');
+        var card = document.querySelector('[data-testid="hotspot-card-' + idx + '"]');
+        var targetId = sectionForHotspot[idx];
+
+        if (dot) {
+          dot.addEventListener("click", function () {
+            scrollToId(targetId);
+          });
+          dot.addEventListener("touchstart", function () {
+            toggleTooltip(dot);
+          }, { passive: true });
+        }
+        if (card) {
+          card.addEventListener("click", function () {
+            scrollToId(targetId);
+            highlightCard(card);
+          });
+        }
+      })(i);
+    }
+
+    function toggleTooltip(dotEl) {
+      var tooltip = dotEl.querySelector("span.parchment-card");
+      if (!tooltip) return;
+      var isVisible = tooltip.style.opacity === "1";
+      document.querySelectorAll('[data-testid^="hotspot-"] span.parchment-card').forEach(function (t) {
+        t.style.opacity = "0";
+        t.style.pointerEvents = "none";
+        t.style.transform = "translate(-50%, -4px)";
+      });
+      if (!isVisible) {
+        tooltip.style.opacity = "1";
+        tooltip.style.transform = "translate(-50%, 0)";
+      }
+    }
+
+    function highlightCard(cardEl) {
+      document.querySelectorAll('[data-testid^="hotspot-card-"]').forEach(function (c) {
+        c.style.borderColor = "";
+        c.style.background = "";
+      });
+      cardEl.style.borderColor = "#a8551f";
+      cardEl.style.background = "rgba(168, 85, 31, 0.08)";
+    }
+  }
+
+  // ---------- Бутон "Към класната стая" (нагоре) ----------
+  function setupBackToTop() {
+    var buttons = document.querySelectorAll('[data-testid="back-to-top"]');
+    buttons.forEach(function (btn) {
+      btn.addEventListener("click", function () {
+        scrollToId("interactive-classroom-anchor") || window.scrollTo({ top: 0, behavior: "smooth" });
+      });
+    });
+  }
+
+  // ---------- Fade-in анимация при скрол ----------
+  function setupFadeIn() {
+    var elements = document.querySelectorAll(".section-fade-in");
+    if (!("IntersectionObserver" in window)) {
+      elements.forEach(function (el) { el.classList.add("is-visible"); });
+      return;
+    }
+    var observer = new IntersectionObserver(function (entries) {
+      entries.forEach(function (entry) {
+        if (entry.isIntersecting) {
+          entry.target.classList.add("is-visible");
+        }
+      });
+    }, { threshold: 0.1, rootMargin: "0px 0px -50px 0px" });
+    elements.forEach(function (el) { observer.observe(el); });
+  }
+
+  // ---------- Помощна функция за плавен скрол до елемент по ID ----------
+  function scrollToId(id) {
+    var el = document.getElementById(id);
+    if (!el) return false;
+    var headerOffset = 90;
+    var elementPosition = el.getBoundingClientRect().top + window.pageYOffset;
+    window.scrollTo({ top: elementPosition - headerOffset, behavior: "smooth" });
+    return true;
+  }
+})();
         </script>
     <script defer="" src="./index_files/v833ccba57c9e4d2798f2e76cebdd09a11778172276447" integrity="sha512-57MDmcccJXYtNnH+ZiBwzC4jb2rvgVCEokYN+L/nLlmO8rfYT/gIpW2A569iJ/3b+0UEasghjuZH/ma3wIs/EQ==" data-cf-beacon="{&quot;version&quot;:&quot;2024.11.0&quot;,&quot;token&quot;:&quot;7f7b0fd8732c4326aae4b9d58d5c514a&quot;,&quot;server_timing&quot;:{&quot;name&quot;:{&quot;cfCacheStatus&quot;:true,&quot;cfEdge&quot;:true,&quot;cfExtPri&quot;:true,&quot;cfL4&quot;:true,&quot;cfOrigin&quot;:true,&quot;cfSpeedBrain&quot;:true},&quot;location_startswith&quot;:null}}" crossorigin="anonymous"></script>
 
